@@ -72,7 +72,7 @@ fun GreetingText(message: String, from: String, modifier: Modifier = Modifier) {
             fontSize = 36.sp,
             modifier = Modifier
                 .padding(16.dp)
-                .align(alignment = Alignment.End)
+                .align(alignment = Alignment.CenterHorizontally)
         )
     }
 }
@@ -103,7 +103,7 @@ fun GreetingPreview() {
     Jetpack_Compose_TextTheme {
         GreetingImage(
             message = stringResource(R.string.happy_birthday_text),
-            from = "From Gabin"
+            from = stringResource(R.string.signature_text)
         )
     }
 }
