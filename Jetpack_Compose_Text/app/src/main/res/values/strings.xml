@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Jetpack_Compose_Text</string>
+    <string name="happy_birthday_text">Happy Birthday Gabin!</string>
+</resources>
