@@ -4,8 +4,16 @@ import androidx.lifecycle.ViewModel
 import com.example.unscramble.data.allWords
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.example.unscramble.data.SCORE_INCREASE
 
 class GameViewModel : ViewModel() {
+    var userGuess by mutableStateOf("")
+        private set
+
     // Game UI state
     private val _uiState = MutableStateFlow(GameUiState())
 
@@ -44,6 +52,57 @@ class GameViewModel : ViewModel() {
         return String(tempWord)
     }
 
+    fun updateUserGuess(guessedWord: String){
+        userGuess = guessedWord
+    }
+
+    /*
+     * Checks the user's guess.
+     */
+    fun checkUserGuess() {
+        if (userGuess.equals(currentWord, ignoreCase = true)) {
+            // User's guess is right, increase score
+            val updatedScore = _uiState.value.score.plus(SCORE_INCREASE)
+
+            // Update score
+            updateGameState(updatedScore)
+        } else {
+            // User's guess is wrong, show an error
+            _uiState.update { currentState ->
+                currentState.copy(isGuessedWordWrong = true)
+            }
+
+        }
+        // Reset user guess
+        updateUserGuess("")
+    }
+
+    /*
+     *  Checks the answer, gets a new work, and updates score.
+     */
+    private fun updateGameState(updatedScore: Int) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                isGuessedWordWrong = false,
+                currentScrambledWord = pickRandomWordAndShuffle(),
+                score = updatedScore,
+                currentWordCount = currentState.currentWordCount.inc()
+            )
+        }
+    }
+
+    /*
+     * Skips the current word
+     */
+    fun skipWord() {
+        updateGameState(_uiState.value.score)
+        // Reset user guess
+        updateUserGuess("")
+    }
+
+    /*
+     * Resets the game. Called at init.
+     */
     fun resetGame() {
         usedWords.clear()
         _uiState.value = GameUiState(currentScrambledWord = pickRandomWordAndShuffle())
